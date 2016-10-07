@@ -4,6 +4,8 @@ import interfaces.TweetStreamer;
 import interfaces.TwitterRequester;
 import model.HashtagCounter;
 import model.Tweet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -14,8 +16,9 @@ import java.util.concurrent.TimeUnit;
  * @created 03.10.16
  */
 public class TweetStatisticImpl implements TweetStatistic {
+    private final Logger LOGGER = LoggerFactory.getLogger(TweetStreamerImpl.class);
+
     private final TweetStreamer streamer;
-    private String hashtag;
     private int n;
 
     public TweetStatisticImpl(int n,
@@ -28,7 +31,6 @@ public class TweetStatisticImpl implements TweetStatistic {
                               int n,
                               TwitterRequester requester,
                               ResponseParser parser) {
-        this.hashtag = hashtag;
         this.n = n;
         this.streamer = new TweetStreamerImpl(hashtag, requester,  parser);
     }
@@ -50,13 +52,17 @@ public class TweetStatisticImpl implements TweetStatistic {
             cur = newCur;
         }
 
+        int cntTweets = 0;
+
         for (Tweet tweet: streamer) {
             int hours = (int)getDateDiff(tweet.getCreatedAt(), now, TimeUnit.HOURS);
             if (hours >= n) {
                 break;
             }
             ret[hours].incCount();
+            ++cntTweets;
         }
+        LOGGER.info("{} tweets was processed", cntTweets);
         return ret;
     }
 

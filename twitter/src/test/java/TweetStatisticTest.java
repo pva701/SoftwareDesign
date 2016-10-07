@@ -69,7 +69,7 @@ public class TweetStatisticTest {
     }
 
     @Test
-    public void test1_MosowHashtag_Count30() throws IOException {
+    public void test1_MosowHashtag() throws IOException {
         TwitterRequester requester = new TwitterRequesterImpl("http://localhost:" + PORT, "");
         ResponseParser parser = new ResponseParserImpl();
         TweetStreamerImpl streamer = new TweetStreamerImpl("moscow", requester, parser);

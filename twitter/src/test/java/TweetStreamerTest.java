@@ -70,7 +70,7 @@ public class TweetStreamerTest {
         Tweet[] page2 = new Tweet[]{new Tweet(d3)};
         ResponseParser responseParser = mock(ResponseParser.class);
         SearchResponse sr1 = new SearchResponse(
-                SearchMetadata.builder().count(2).build(),
+                SearchMetadata.builder().count(2).nextResults("").build(),
                 page1);
         SearchResponse sr2 = new SearchResponse(
                 SearchMetadata.builder().count(2).build(),

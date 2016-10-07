@@ -26,6 +26,8 @@ public class Main {
         int n = Integer.parseInt(args[1]);
         HashtagCounter[] counters = new TweetStatisticImpl(hashTag, n, bearerToken).computeStatistic();
         SimpleDateFormat df = new SimpleDateFormat("E MMM dd HH:mm:ss ZZZZ yyyy");
+        System.out.println("Results for #" + hashTag);
+
         for (HashtagCounter counter: counters) {
             String from = df.format(counter.getFrom());
             String to = df.format(counter.getTo());

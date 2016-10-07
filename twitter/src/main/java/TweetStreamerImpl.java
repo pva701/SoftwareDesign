@@ -4,6 +4,8 @@ import interfaces.TwitterRequester;
 import model.SearchMetadata;
 import model.SearchResponse;
 import model.Tweet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -12,6 +14,8 @@ import java.util.*;
  * @created 01.10.16
  */
 public class TweetStreamerImpl implements TweetStreamer {
+
+    private final Logger LOGGER = LoggerFactory.getLogger(TweetStreamerImpl.class);
 
     private final String hashtag;
     private final TwitterRequester requester;
@@ -104,8 +108,9 @@ public class TweetStreamerImpl implements TweetStreamer {
             prevMetadata = response.getSearchMetadata();
             hasNext = !(prevMetadata.getNextResults() == null || response.getStatuses().length < count);
             Collections.addAll(twittsQueue, response.getStatuses());
-        } catch (Exception ignore) {
-            ignore.printStackTrace();
+        } catch (Exception e) {
+            LOGGER.info("GET Request to Twitter failed", e);
+            hasNext = false;
         }
     }
 }
