@@ -44,4 +44,30 @@ public class SearchMetadata {
     public void setCount(int count) {
         this.count = count;
     }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private SearchMetadata metadata;
+
+        private Builder() {
+            metadata = new SearchMetadata();
+        }
+
+        public Builder count(int x) {
+            metadata.setCount(x);
+            return this;
+        }
+
+        public Builder nextResults(String nextResults) {
+            metadata.setNextResults(nextResults);
+            return this;
+        }
+
+        public SearchMetadata build() {
+            return metadata;
+        }
+    }
 }

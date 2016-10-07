@@ -22,11 +22,31 @@ public class Tweet {
 
     public Tweet() {}
 
+    public Tweet(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Tweet tweet = (Tweet) o;
+
+        return createdAt != null ? createdAt.equals(tweet.createdAt) : tweet.createdAt == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return createdAt != null ? createdAt.hashCode() : 0;
     }
 }

@@ -17,6 +17,11 @@ public class SearchResponse {
 
     public SearchResponse() {}
 
+    public SearchResponse(SearchMetadata metadata, Tweet[] statuses) {
+        this.searchMetadata = metadata;
+        this.statuses = statuses;
+    }
+
     public Tweet[] getStatuses() {
         return statuses;
     }

@@ -1,9 +1,10 @@
-import interfaces.*;
+import interfaces.ResponseParser;
+import interfaces.TweetStreamer;
+import interfaces.TwitterRequester;
 import model.SearchMetadata;
 import model.SearchResponse;
 import model.Tweet;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -71,10 +72,10 @@ public class TweetStreamerImpl implements TweetStreamer {
     private boolean hasNext = true;
 
     public boolean hasNext() {
-        if (!hasNext) {
-            return hasNext;
-        }
         if (twittsQueue.isEmpty()) {
+            if (!hasNext) {
+                return false;
+            }
             getNewTwits();
         }
         return !twittsQueue.isEmpty();
@@ -101,11 +102,10 @@ public class TweetStreamerImpl implements TweetStreamer {
             }
             SearchResponse response = parser.parseResponse(json);
             prevMetadata = response.getSearchMetadata();
-            if (response.getStatuses().length < count) {
-                hasNext = false;
-            }
+            hasNext = !(prevMetadata.getNextResults() == null || response.getStatuses().length < count);
             Collections.addAll(twittsQueue, response.getStatuses());
         } catch (Exception ignore) {
+            ignore.printStackTrace();
         }
     }
 }

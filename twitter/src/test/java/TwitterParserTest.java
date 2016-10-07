@@ -3,25 +3,13 @@ import model.SearchResponse;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import static utils.Utils.readResourceFile;
 
 /**
  * @author Ilya Peresadin <pva701@gmail.com>
  * @created 03.10.16
  */
 public class TwitterParserTest {
-
-    private String readResourceFile(String fileName) throws IOException {
-        File file = new File("src/test/resources/" + fileName);
-        FileInputStream fis = new FileInputStream(file);
-        byte[] data = new byte[(int) file.length()];
-        fis.read(data);
-        fis.close();
-        return new String(data, "UTF-8");
-    }
-
 
     @Test
     public void test() throws Exception {

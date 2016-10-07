@@ -18,10 +18,8 @@ public class TweetStatisticImpl implements TweetStatistic {
     private String hashtag;
     private int n;
 
-    public TweetStatisticImpl(String hashtag,
-                              int n,
+    public TweetStatisticImpl(int n,
                               TweetStreamer streamer) {
-        this.hashtag = hashtag;
         this.n = n;
         this.streamer = streamer;
     }
@@ -46,15 +44,16 @@ public class TweetStatisticImpl implements TweetStatistic {
         Date cur = now;
         HashtagCounter[] ret = new HashtagCounter[n];
 
+        for (int i = 0; i < n; ++i) {
+            Date newCur = Date.from(cur.toInstant().minus(1, ChronoUnit.HOURS));
+            ret[i] = new HashtagCounter(newCur, cur, 0);
+            cur = newCur;
+        }
+
         for (Tweet tweet: streamer) {
             int hours = (int)getDateDiff(tweet.getCreatedAt(), now, TimeUnit.HOURS);
             if (hours >= n) {
                 break;
-            }
-            if (ret[hours] == null) {
-                Date newCur = Date.from(cur.toInstant().minus(1, ChronoUnit.HOURS));
-                ret[hours] = new HashtagCounter(newCur, cur, 0);
-                cur = newCur;
             }
             ret[hours].incCount();
         }
