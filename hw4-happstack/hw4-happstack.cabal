@@ -15,13 +15,7 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Model
   build-depends:       base >= 4.7 && < 5
-                      , happstack-server
-                      , acid-state
-                      , safecopy
-                      , mtl
-                      , vector
   default-language:    Haskell2010
 
 executable hw4-happstack-exe
@@ -30,6 +24,13 @@ executable hw4-happstack-exe
   ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , hw4-happstack
+                     , happstack-server
+                     , safecopy
+                     , acid-state
+                     , mtl
+                     , containers
+                     , aeson
+                     , hashable
   default-language:    Haskell2010
 
 test-suite hw4-happstack-test
