@@ -2,7 +2,7 @@
 module Model
        ( Id
        , Name
-       , Status
+       , Status(..)
        , Task(..)
        , TaskList(..)
        , Schedule(..)
@@ -10,7 +10,9 @@ module Model
        ) where
 import Control.Monad.IO.Class
 import Data.Data            ( Data, Typeable )
-import Data.Vector (Vector)
+--import Data.Vector (Vector)
+import Data.Aeson
+import Data.Map
 
 type Name = String
 data Status = Completed
@@ -26,10 +28,10 @@ data Task = Task
 
 data TaskList = TaskList
      { tlid::Id
-     , tasks:: Vector Task
+     , tname::Name
      } deriving (Eq, Ord, Read, Show, Data, Typeable)
 
-newtype Schedule = Schedule (Vector TaskList)
+newtype Schedule = Schedule (Map Int (TaskList, Map Int Task))
 
 class DAO f where
     addTask::MonadIO m => f
@@ -37,14 +39,17 @@ class DAO f where
                        -> Name --Name of task
                        -> m (Maybe Task) --Nothing if no such task list id
 
-    addTaskLists::MonadIO m => f
-                            -> Name --TaskList name
-                            -> m (Maybe TaskList)
+    addTaskList::MonadIO m => f
+                           -> Name --TaskList name
+                           -> m (Maybe TaskList)
 
     deleteTask::MonadIO m => f
+                          -> Id --TaskList id
                           -> Id --Task id
                           -> m (Maybe Task)
 
     deleteTaskList::MonadIO m => f
                               -> Id --TaskList id
                               -> m (Maybe TaskList)
+
+    getSchedule::MonadIO m => f -> m Schedule
