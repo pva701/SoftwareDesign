@@ -14,7 +14,6 @@ import java.util.Map;
  */
 public class TwitterRequesterImpl implements TwitterRequester {
 
-    //TODO logger
     private String host;
     private String bearerToken;
 
