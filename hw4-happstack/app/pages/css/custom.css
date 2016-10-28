@@ -40,14 +40,6 @@
     font-style: italic;
 }
 
-.form-horizontal .form-control-static {
-    font-size: 130%;
-    padding-bottom: 0;
-}
-
-.custom-control-static {
-    /*border-bottom: solid #616363 1px;*/
-}
 
 
 .custom-label {
@@ -310,4 +302,8 @@ html {
     color: white;
     font-size: 30px;
     font-weight: bold;
+}
+
+.list-group-item .form-control {
+    width: 80%;
 }

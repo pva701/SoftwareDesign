@@ -19,7 +19,7 @@ library
   default-language:    Haskell2010
 
 executable hw4-happstack-exe
-  hs-source-dirs:      app
+  hs-source-dirs:      app, app/pages
   main-is:             Main.hs
   ghc-options:         -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
@@ -31,6 +31,18 @@ executable hw4-happstack-exe
                      , containers
                      , aeson
                      , hashable
+                     , time
+                     , hsx2hs
+                     , hsp
+                     , text
+                     , html
+                     , hamlet
+                     , shakespeare
+                     , blaze-html
+  other-modules:       AcidDAO
+                     , Controller
+                     , Model
+                     , Index
   default-language:    Haskell2010
 
 test-suite hw4-happstack-test

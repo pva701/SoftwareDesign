@@ -10,8 +10,6 @@ module Model
        ) where
 import Control.Monad.IO.Class
 import Data.Data            ( Data, Typeable )
---import Data.Vector (Vector)
-import Data.Aeson
 import Data.Map
 
 type Name = String
@@ -53,3 +51,8 @@ class DAO f where
                               -> m (Maybe TaskList)
 
     getSchedule::MonadIO m => f -> m Schedule
+
+    completeTask::MonadIO m => f
+                            -> Id
+                            -> Id
+                            -> m (Maybe Task)
