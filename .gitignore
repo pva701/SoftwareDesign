@@ -1,2 +1,7 @@
 .idea
 *.iml
+*_hi
+*_o
+*.o
+*.hi
+*/out
