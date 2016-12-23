@@ -2,11 +2,6 @@ import draw.CircleDrawStrategy;
 import graph.Graph;
 import graph.GraphAdjacencyMatrix;
 import graph.GraphEdgeList;
-import javafx.application.Application;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.canvas.*;
-import javafx.stage.Stage;
 
 import java.io.FileInputStream;
 import java.io.IOException;
