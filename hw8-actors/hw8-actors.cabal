@@ -16,10 +16,15 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     Serve
+                     , Types
+                     , Control.Concurrent.Actor
   build-depends:       base >= 4.7 && < 5
-                     , thespian
                      , universum
                      , mtl
+                     , aeson
+                     , wreq
+                     , filepath >= 1.4
+                     , containers
   default-language:    Haskell2010
   default-extensions:  DeriveDataTypeable
                        DeriveGeneric
