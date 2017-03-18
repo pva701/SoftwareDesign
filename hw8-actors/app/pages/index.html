@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" content="text/html"/>
+    <title>Title</title>
+
+    <script src="js/jquery.min.js"></script>
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <script src="js/bootstrap.js"></script>
+    <link href="css/custom.css" rel="stylesheet">
+    <script type="text/javascript" src="js/handlebars-v3.0.3.js"></script>
+
+</head>
+<body style="margin-bottom: 50px">
+
+    <div class="container" id="schedule">
+        <div class="list-group col-md-4" id="taskList1">
+            <div class="list-group-item active heading">
+                Учеба
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true"  onclick="delTaskList(this.parentElement.parentElement)">&times;</button>
+            </div>
+
+            <div class="list-group-item list-group-item-action container" id="1:1">
+                БД
+                <button type="button" class="btn btn-danger float-md-right" onclick="delTask(this.parentElement)"><span class="glyphicon glyphicon-trash"></span></button>
+                <button type="button" class="btn btn-success float-md-right" onclick="finishTask(this.parentElement)"><span class="glyphicon glyphicon-check"></span></button>
+            </div>
+
+            <div class="list-group-item list-group-item-action container">
+                Haskell fdkfjdkj fkdfj
+                <button type="button" class="btn btn-danger float-md-right">Delete</button>
+                <span class="tag tag-success float-md-right"> <span class="glyphicon glyphicon-ok"></span> </span>
+            </div>
+
+            <div class="list-group-item list-group-item-action form-inline" id="addTaskItem">
+                <input type="text" class="form-control" id="tName">
+                <button type="button" class="btn btn-success float-md-right" onclick="addTask(this.parentElement)"><span class="glyphicon glyphicon-plus"></span></button>
+            </div>
+        </div>
+
+
+
+        <div class="list-group col-md-4">
+            <div class="list-group-item active heading">
+                Спорт
+            </div>
+
+            <div class="list-group-item list-group-item-action container">
+                Турнички
+                <button type="button" class="btn btn-danger float-md-right">Delete</button>
+                <button type="button" class="btn btn-success float-md-right">Finish</button>
+            </div>
+
+            <div class="list-group-item list-group-item-action container">
+                Бег
+                <button type="button" class="btn btn-danger float-md-right">Delete</button>
+                <span class="tag tag-success float-md-right">Finished</span>
+            </div>
+        </div>
+
+        <div class="list-group col-md-4">
+            <div class="list-group-item active heading">
+                Отдых
+            </div>
+
+            <div class="list-group-item list-group-item-action container">
+                Гулять
+                <button type="button" class="btn btn-danger float-md-right">Delete</button>
+                <button type="button" class="btn btn-success float-md-right">Finish</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="tasklist-overlay">
+        <div class="container">
+            <div class="form-inline text-md-center" id="addTaskListItem">
+                <div class="form-group">
+                    <label>Add Task List</label>
+                    <input type="text" class="form-control" style="width: 300px" id="tlName">
+                </div>
+                <button type="button" id="newTL" class="btn btn-success" onclick="addTaskList(this.parentElement)"><span class="glyphicon glyphicon-list-alt"></span></button>
+            </div>
+        </div>
+    </div>
+
+
+    <!--Templates-->
+    <script id="task-template" type="text/x-handlebars-template">
+        <div class="list-group-item list-group-item-action container" id="{{id}}">
+            {{name}}
+            <button type="button" class="btn btn-danger float-md-right" onclick="delTask(this.parentElement)">Delete</button>
+            <button type="button" class="btn btn-success float-md-right" onclick="finishTask(this.parentElement)">Finish</button>
+        </div>
+    </script>
+
+    <script id="taskList-template" type="text/x-handlebars-template">
+        <div class="list-group col-md-4" id="{{id}}">
+            <div class="list-group-item active heading">
+                {{name}}
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true"  onclick="delTaskList(this.parentElement.parentElement)">&times;</button>
+            </div>
+
+            <div class="list-group-item list-group-item-action form-inline" id="addTaskItem">
+                <input type="text" class="form-control" id="tName">
+                <button type="button" class="btn btn-success float-md-right" onclick="addTask(this.parentElement)">Add</button>
+            </div>
+        </div>
+    </script>
+
+
+
+    <!--Scripts-->
+    <script>
+        var counter = 0;
+        var taskTemplate = Handlebars.compile($('#task-template').html());
+        var taskListTemplate = Handlebars.compile($('#taskList-template').html());
+
+        function delTask(ths) {
+            ths.remove();
+        }
+
+        function delTaskList(ths) {
+            var id = ths.id.substring("taskList".length);
+            $.ajax({
+                type: "DELETE",
+                url: "/taskList/" + id,
+                success: function(msg) {
+                    console.log(msg);
+                    ths.remove();
+                },
+                error: function () {
+                }
+            });
+        }
+
+        function addTask(ths) {
+            console.log(ths.id);
+            var field = $('#' + ths.id + ' #tName');
+            var name = field.val().trim();
+            if (name == "") {
+                return;
+            }
+            var html = taskTemplate({name:name});
+            var taskListId = ths.parentElement.id;
+            field.val(' ');
+            $(html).insertBefore('#' + taskListId + ' #' + ths.id);
+        }
+
+        function addTaskList(ths) {
+            var field = $('#' + ths.id + ' #tlName');
+            var name = field.val().trim();
+            if (name == "") {
+                return;
+            }
+            field.val('');
+            console.log('@' + name + '@');
+            $('#schedule').append(taskListTemplate({name: name, id: ++counter}));
+        }
+
+
+        $("#tlName").keyup(function(event){
+            if(event.keyCode == 13){
+                $("#newTL").click();
+            }
+        });
+    </script>
+</body>
+</html>

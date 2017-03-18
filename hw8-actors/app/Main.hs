@@ -1,6 +1,8 @@
 module Main where
 
-import Lib
+import           Universum
+import           Web       (runWebApp)
 
 main :: IO ()
-main = someFunc
+main = do
+    runWebApp 3000 2000 []

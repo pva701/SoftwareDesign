@@ -1,11 +1,11 @@
-module Lib
+module Serve
     ( runMasterActor
+    , Response (..)
     ) where
 
 import           Control.Concurrent.Actor (Actor, ActorM, Address, Handler (..),
                                            RemoteException, monitor, receive, self, send,
                                            spawn)
-import           Control.Concurrent.MVar  (MVar)
 import           Control.Monad.State      (get)
 import           Universum
 
@@ -16,8 +16,8 @@ data Start = Start !Text !String
 
 type ActorState = StateT (Int, [Response]) ActorM ()
 
-masterActor :: Int -> Text -> [String] -> Actor
-masterActor ((*1000) -> respTL) query urls = do
+masterActor :: Int -> Text -> [String] -> ([Response] -> IO ()) -> Actor
+masterActor ((*1000) -> respTL) query urls onFinish = do
     lift $ print "Master Actor started"
     me <- self
     let childrenLen = length urls
@@ -26,7 +26,7 @@ masterActor ((*1000) -> respTL) query urls = do
     void $ lift $ spawn (timeoutActor me respTL)
     mapM_ (uncurry $ flip send . Start query) $ zip urls children
     masterActorDo (childrenLen, []) $ \(_, responses) -> do
-        notImplemented
+        lift $ onFinish responses
         lift $ print "Master Actor finished"
 
 data ResponseRes = Js Response | No | TL
@@ -66,5 +66,5 @@ timeoutActor parent tl = do
     lift $ threadDelay tl
     send parent ()
 
-runMasterActor :: MonadIO m => Int -> Text -> [String] -> m ()
-runMasterActor tl query = void . liftIO . spawn . masterActor tl query
+runMasterActor :: MonadIO m => Int -> Text -> [String] -> ([Response] -> IO ()) -> m ()
+runMasterActor tl query urls = void . liftIO . spawn . masterActor tl query urls
