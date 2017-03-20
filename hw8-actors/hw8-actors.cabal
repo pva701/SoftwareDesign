@@ -60,6 +60,24 @@ executable hw8-actors-exe
   default-language:    Haskell2010
   default-extensions:  NoImplicitPrelude
 
+executable hw8-stub-exe
+  hs-source-dirs:      stub
+  main-is:             Main.hs
+  other-modules:       Web
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  build-depends:       base
+                     , hw8-actors
+                     , optparse-simple
+                     , scotty
+                     , aeson
+                     , universum
+                     , bytestring
+                     , warp
+                     , wai-extra >= 3.0
+                     , unordered-containers >= 0.2
+  default-language:    Haskell2010
+  default-extensions:  NoImplicitPrelude
+
 test-suite hw8-actors-test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      test
