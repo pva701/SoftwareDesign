@@ -52,6 +52,7 @@ executable hw8-actors-exe
   build-depends:       base
                      , hw8-actors
                      , scotty
+                     , aeson
                      , universum
                      , bytestring
                      , warp

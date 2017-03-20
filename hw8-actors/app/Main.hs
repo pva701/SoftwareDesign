@@ -5,4 +5,4 @@ import           Web       (runWebApp)
 
 main :: IO ()
 main = do
-    runWebApp 3000 2000 []
+   runWebApp 3000 2000 ["http://localhost:9000/login"]

@@ -12,7 +12,7 @@ data SearchEntry = SearchEntry
     { url       :: !String
     , title     :: !String
     , searchSys :: !String
-    } deriving (Generic)
+    } deriving (Typeable, Show, Generic)
 
 type Response = [SearchEntry]
 
