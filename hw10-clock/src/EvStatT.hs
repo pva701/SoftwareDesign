@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 module EvStatT
        ( EvStatT (..)
        , runEvStatT
@@ -6,7 +7,8 @@ module EvStatT
 import           Control.Monad.State (get, put)
 import           Control.Monad.Trans (MonadTrans (..))
 import           Data.List           (groupBy)
-import           Data.Time.Units     (Hour, Microsecond, subTime)
+import           Data.Ratio          ((%))
+import           Data.Time.Units     (Hour, Microsecond, Minute, subTime)
 import           Universum
 
 import           Class               (ClockClass (..), EvStatClass (..))
@@ -35,9 +37,9 @@ takeLastHour nw (x:xs)
     | snd x >= subTime nw hour = (x:takeLastHour nw xs)
     | otherwise = []
 
-calcRPM :: Events -> (String, Rational)
-calcRPM xs@(x:_) = (fst x, (/60) . fromIntegral . length $ xs)
-calcRPM []       = ("", 0)
+calcRPM :: Int -> Events -> (String, Rational)
+calcRPM (fromIntegral -> tot) xs@(x:_) = (fst x, (% tot) . fromIntegral . length $ xs)
+calcRPM tot []                         = ("", 0)
 
 instance (Monad m, ClockClass m) => EvStatClass (EvStatT m) where
     incEvent name = EvStatT $ do
@@ -51,11 +53,13 @@ instance (Monad m, ClockClass m) => EvStatClass (EvStatT m) where
         (takeLastHour <$> now <*> get)
 
     getAllEventStatistic = EvStatT $
-        map calcRPM .
+        map (calcRPM 60) .
         groupBy (\x y -> fst x == fst y) <$>
         (takeLastHour <$> now <*> get)
 
-    getStatistic = EvStatT $
-        map calcRPM .
-        groupBy (\x y -> fst x == fst y) <$>
-        get
+    getStatistic = EvStatT $ do
+        times <- get
+        let mnTime = minimum $ map snd times
+        nw <- now
+        let (tot::Int) = fromIntegral $ subTime @Microsecond @Microsecond @Minute nw mnTime
+        pure $ map (calcRPM tot) . groupBy (\x y -> fst x == fst y) $ times

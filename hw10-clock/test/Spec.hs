@@ -2,16 +2,14 @@
 
 import           Test.Hspec            (Expectation, Spec, describe, hspec, it, shouldBe)
 import           Test.Hspec.QuickCheck (prop)
-import           Test.QuickCheck       (Property, (===))
+import           Test.QuickCheck       (Property, (.&&.), (===))
 import           Universum
 
+import           Aux                   (TEvent (..), Test (..), runImpure, runPure)
 import           Class                 (EvStatClass (..))
 import           ClockT                (ClockT (..), addHM, addHours, addMinutes,
                                         runClockT)
 import           EvStatT               (EvStatT (..), runEvStatT)
-
-type PureWorkMode a = EvStatT (ClockT Identity) a
-type WorkMode m a = EvStatT (ClockT m) a
 
 main :: IO ()
 main = hspec spec
@@ -21,6 +19,7 @@ spec = describe "Event Statistics tests" $ do
     prop "Expire event" expireEventP
     prop "Not expire event" notExpireEventP
     it "Event per minute" $ eventPerMinuteS "event"
+    prop "Random test" $ testP
 
 expireEventP :: String -> Property
 expireEventP name = (0 === ) . runPure $ do
@@ -45,9 +44,15 @@ eventPerMinuteS name = runImpure $ action 0
         lift $ addMinutes 1
         action $ n + 1
 
---- Aux
-runPure :: PureWorkMode a -> a
-runPure = runIdentity . runClockT . runEvStatT
-
-runImpure :: Monad m => WorkMode m a -> m a
-runImpure = runClockT . runEvStatT
+testP :: Test -> Property
+testP (Test seq ansLH ansAT) = do
+    let (res1, res2) = runPure $ action seq
+    res1 === ansLH
+  where
+    action [] = (,) <$> getAllEventStatistic <*> getStatistic
+    action (IncMinute:xs) = do
+        lift $ addMinutes 1
+        action xs
+    action (AddEvent name:xs) = do
+        incEvent name
+        action xs
