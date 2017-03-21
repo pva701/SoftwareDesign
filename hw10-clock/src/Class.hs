@@ -8,9 +8,9 @@ import           Universum
 
 class EvStatClass m where
     incEvent :: String -> m ()
-    getEventStatisticByName :: String -> m Double
-    getAllEventStatistic :: m [(String, Double)]
-    getStatistic :: m [(String, Double)]
+    getEventStatisticByName :: String -> m Rational
+    getAllEventStatistic :: m [(String, Rational)]
+    getStatistic :: m [(String, Rational)]
 
 class ClockClass m where
     now :: m Microsecond

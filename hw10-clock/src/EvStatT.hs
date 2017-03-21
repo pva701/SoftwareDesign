@@ -1,10 +1,10 @@
--- |
-
 module EvStatT
        ( EvStatT (..)
+       , runEvStatT
        ) where
 
 import           Control.Monad.State (get, put)
+import           Control.Monad.Trans (MonadTrans (..))
 import           Data.List           (groupBy)
 import           Data.Time.Units     (Hour, Microsecond, subTime)
 import           Universum
@@ -14,12 +14,16 @@ import           Class               (ClockClass (..), EvStatClass (..))
 type Events = [(String, Microsecond)]
 
 newtype EvStatT m a = EvStatT
-    { runEvStatT :: StateT Events m a
+    { getEvStatT :: StateT Events m a
     } deriving ( Functor
                , Applicative
                , Monad
                , MonadState Events
+               , MonadTrans
                )
+
+runEvStatT :: Monad m => EvStatT m a -> m a
+runEvStatT = flip evalStateT [] . getEvStatT
 
 hour :: Hour
 hour = fromIntegral 1
@@ -30,7 +34,7 @@ takeLastHour nw (x:xs)
     | snd x >= subTime nw hour = (x:takeLastHour nw xs)
     | otherwise = []
 
-calcRPM :: Events -> (String, Double)
+calcRPM :: Events -> (String, Rational)
 calcRPM xs@(x:_) = (fst x, (/60) . fromIntegral . length $ xs)
 calcRPM []       = ("", 0)
 
