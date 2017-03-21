@@ -20,6 +20,7 @@ newtype EvStatT m a = EvStatT
                , Monad
                , MonadState Events
                , MonadTrans
+               , MonadIO
                )
 
 runEvStatT :: Monad m => EvStatT m a -> m a

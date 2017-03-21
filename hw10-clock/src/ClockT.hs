@@ -20,6 +20,7 @@ newtype ClockT m a = ClockT
                , Applicative
                , Monad
                , MonadTrans
+               , MonadIO
                )
 
 instance Monad m => ClockClass (ClockT m) where
