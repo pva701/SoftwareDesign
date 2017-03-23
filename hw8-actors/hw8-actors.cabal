@@ -57,6 +57,7 @@ executable hw8-actors-exe
                      , bytestring
                      , warp
                      , wai-extra >= 3.0
+                     , wai-middleware-static
   default-language:    Haskell2010
   default-extensions:  NoImplicitPrelude
 

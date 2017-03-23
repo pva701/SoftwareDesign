@@ -11,6 +11,8 @@ import           Data.Aeson                           (encode)
 import           Data.ByteString.Lazy                 (ByteString)
 import qualified Network.Wai.Handler.Warp             as Warp
 import           Network.Wai.Middleware.RequestLogger (logStdoutDev)
+import           Network.Wai.Middleware.Static        (addBase, noDots, staticPolicy,
+                                                       (>->))
 import           Universum                            hiding (ByteString)
 import qualified Web.Scotty                           as Sc
 
@@ -20,10 +22,11 @@ runWebApp :: Word16 -> Int -> [String] -> IO ()
 runWebApp (fromIntegral -> port) tl urls = do
     logInfo $ "Running web app on port: " <> show port
     application <- Sc.scottyApp $ webApp tl urls
-    Warp.run port $ logStdoutDev  application
+    Warp.run port $ staticPolicy (noDots >-> addBase "app/pages") $ logStdoutDev application
 
 webApp :: Int -> [String] -> Sc.ScottyM ()
 webApp tl urls = do
+    Sc.get "/" $ Sc.file "app/pages/index.html"
     Sc.get (Sc.capture "/api/query/:q") $ do
         (q::String) <- Sc.param "q"
         r <- lift $ handleQuery tl q urls
