@@ -20,14 +20,9 @@ public class Main {
         Fib fib = ctx.getBean(Fib.class);
         TwoFib twoFib = ctx.getBean(TwoFib.class);
         //fib.compute(10);
-        twoFib.compute(20);
+        twoFib.compute(16);
 
         ProfileAspect profiler = ctx.getBean(ProfileAspect.class);
-        for (Map.Entry<String, ProfileAspect.MethodInfo> entry: profiler.getStatistic().entrySet())
-            System.out.println(
-                    "Method: " + entry.getKey() +
-                    ", total time: " + entry.getValue().getTime() / 1000000.0 + " ms" +
-                    ", total calls: " + entry.getValue().getCalls() +
-                    ", average time: " + entry.getValue().getAverage() / 1000000.0 + " ms");
+        profiler.printStatistic();
     }
 }
