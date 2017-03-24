@@ -28,7 +28,6 @@
         </div>
 
         <div class="col-md-10 col-md-offset-1 list-group" style="padding: 0;" id="search-results">
-    			
         </div>
 
     </div>
@@ -37,6 +36,16 @@
     <!--Templates-->
     <script id="searching" type="text/x-handlebars-template">
     	<img src="img/giphy.gif" style="display: block; margin: auto;">
+    </script>
+
+    <script id="not-found" type="text/x-handlebars-template">
+    	<div class="list-group-item list-group-item-action flex-column align-items-start">
+			<div class="d-flex w-100 justify-content-between">
+				<h3 class="mb-1" style="text-align: center;">
+					По запросу "{{query}}" ничего не найдено
+				</h3>
+			</div>
+		</div>
     </script>
 
 
@@ -66,13 +75,18 @@
     <!--Scripts-->
     <script>
         var searching = Handlebars.compile($('#searching').html());
+        var notFound = Handlebars.compile($('#not-found').html());
         var googleTemplate = Handlebars.compile($('#google-template').html());
         var yandexTemplate = Handlebars.compile($('#yandex-template').html());
 
         function search() {
         	var val = $('#qField').val().trim();
-        	console.log(val);
-        	$('#search-results').html(searching);
+        	var filled = false;
+        	setTimeout(function (argument) {
+        		if (!filled)
+        			$('#search-results').html(searching);
+        	}, 200);
+        	
         	$.ajax({
                 type: "GET",
                 url: "api/query/" + val,
@@ -82,12 +96,17 @@
                 	console.log(resp);
 
                     $('#search-results').html('');
+                    console.log(resp.length);
+                    if (resp.length == 0) {
+                    	$('#search-results').html(notFound({'query': val}));
+                    }
 
                 	for (var i = 0; i < resp.length; ++i)
                 		if (resp[i].searchSys == 'google')
                         	$('#search-results').append(googleTemplate(resp[i]));
                         else if (resp[i].searchSys == 'yandex')
                         	$('#search-results').append(yandexTemplate(resp[i]));
+                    filled = true;
                 },
                 error: function () {
                 	console.log("Erorr during request");

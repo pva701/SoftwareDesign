@@ -22,7 +22,7 @@ argsParser = do
         long "req-tl" <>
         metavar "INT" <>
         help "Request timeout" <>
-        value 0
+        value 2000
         )
     port <- option auto (
         long "port" <>
