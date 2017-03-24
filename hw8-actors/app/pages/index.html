@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" content="text/html"/>
-    <title>Title</title>
+    <title>Поиск</title>
 
     <script src="js/jquery.min.js"></script>
     <link href="css/bootstrap.css" rel="stylesheet">
@@ -13,60 +13,97 @@
 </head>
 <body style="margin-bottom: 50px">
 
-    <div class="container" id="schedule">
+    <div class="container" id="search">
     	<div class="col-md-10 col-md-offset-1" style="padding: 0; margin-top: 30px">
-            <form style="margin-bottom: 5px" id="searchInput">
+            <form style="margin-bottom: 5px" id="searchform">
                 <div class="input-group">
                     <input type="text" class="form-control" name="qField" id = "qField" placeholder="Введите запрос">
 
                     <span class="input-group-btn">
-                        <button type="button" class="btn btn-primary" onclick="search();">
+                        <button type="button" class="btn btn-primary" onclick="search();" id="search-btn">
                         	<span class="glyphicon glyphicon-search"></span></button>
                     </span>
                 </div>
             </form>
         </div>
 
-        <div class="col-md-10 col-md-offset-1" style="padding: 0;" id="search-results">
+        <div class="col-md-10 col-md-offset-1 list-group" style="padding: 0;" id="search-results">
+    			
         </div>
+
     </div>
 
 
     <!--Templates-->
-    <script id="result-template" type="text/x-handlebars-template">
-    	<div class="col-md-12" style="padding: 0; margin-top: 10px; border-style: solid;">
-    		<h2>{{title}}</h2>
-    		<h3>{{url}}</h3>
-    		<h4>{{searchSys}}</h4>
-        </div>
+    <script id="searching" type="text/x-handlebars-template">
+    	<img src="img/giphy.gif" style="display: block; margin: auto;">
     </script>
 
 
+    <script id="google-template" type="text/x-handlebars-template">
+		<a href="{{url}}" class="list-group-item list-group-item-action flex-column align-items-start" style="padding-left: 5px" target="_blank">
+			<div class="d-flex w-100 justify-content-between">
+				<h3 class="mb-1">
+					<img src="img/google-logo.png" width="32" height="32">
+					{{title}}
+				</h3>
+			</div>
+		</a>
+	</script>
+
+	<script id="yandex-template" type="text/x-handlebars-template">
+		<a href="{{url}}" class="list-group-item list-group-item-action flex-column align-items-start" target="_blank">
+			<div class="d-flex w-100 justify-content-between">
+				<h3 class="mb-1">
+					<img src="img/yandex-logo.png" width="16" height="32" style="display: inline-block; margin-right: 6px">
+					{{title}}
+				</h3>
+			</div>
+		</a>
+	</script>
+			
+
     <!--Scripts-->
     <script>
-        var counter = 0;
-        var resTemplate = Handlebars.compile($('#result-template').html());
+        var searching = Handlebars.compile($('#searching').html());
+        var googleTemplate = Handlebars.compile($('#google-template').html());
+        var yandexTemplate = Handlebars.compile($('#yandex-template').html());
 
         function search() {
-        	var val = $('#qField').val();
+        	var val = $('#qField').val().trim();
         	console.log(val);
+        	$('#search-results').html(searching);
         	$.ajax({
                 type: "GET",
                 url: "api/query/" + val,
                 success: function(msg) {
                 	msg = "{\"responses\" : " + msg + "}";
                 	var resp = JSON.parse(msg).responses;
+                	console.log(resp);
 
                     $('#search-results').html('');
 
                 	for (var i = 0; i < resp.length; ++i)
-                        $('#search-results').append(resTemplate(resp[i]));
+                		if (resp[i].searchSys == 'google')
+                        	$('#search-results').append(googleTemplate(resp[i]));
+                        else if (resp[i].searchSys == 'yandex')
+                        	$('#search-results').append(yandexTemplate(resp[i]));
                 },
                 error: function () {
                 	console.log("Erorr during request");
                 }
             });
         }
+
+        $(document).ready(function() {
+		  	$(window).keydown(function(event){
+		    if(event.keyCode == 13) {
+		      event.preventDefault();
+		      $('#search-btn').click();
+		      return false;
+		    }
+  		});
+});
     </script>
 </body>
 </html>

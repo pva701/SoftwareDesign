@@ -18,8 +18,8 @@ resp = HM.fromList
         ] ),
       ( "yandex/москва"
       , [ SearchEntry "https://ru.wikipedia.org/wiki/Москва" "Москва — Википедия" "yandex"
-        , SearchEntry "yandex.ru/maps/Москва" "Москва на карте России" "yandex"
-        , SearchEntry "vk.com/mos" "Город Москва | ВКонтакте" "yandex"
+        , SearchEntry "https://yandex.ru/maps/Москва" "Москва на карте России" "yandex"
+        , SearchEntry "https://vk.com/mos" "Город Москва | ВКонтакте" "yandex"
         ] ),
       ( "google/java"
       , [ SearchEntry "https://java.com/ru/download/" "Загрузить бесплатное программное обеспечение Java" "google"
