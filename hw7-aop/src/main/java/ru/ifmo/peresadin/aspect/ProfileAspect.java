@@ -34,24 +34,41 @@ public class ProfileAspect {
         }
     }
 
+    private final String pack = "ru.ifmo.peresadin.test";
     Map<String, MethodInfo> methods = new TreeMap<>();
 
-    @Around("@annotation(ru.ifmo.peresadin.aspect.Profile)")
+    @Around("execution(* ru.ifmo.peresadin.test.*.*(..))")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+        System.out.println(joinPoint.getSignature().getName());
+
         long startNs = System.nanoTime();
-        String method = joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName();
+        String[] tokens = joinPoint.getSignature().toLongString().split(" ");
+        String method = tokens[2];
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+
+        StringBuilder sb = new StringBuilder();
+        for (StackTraceElement element : stackTrace) {
+            String springPrefix1 = "$$EnhancerBySpringCGLIB";
+            String springPrefix2 = "$$FastClassBySpringCGLIB";
+            String className = element.getClassName();
+            if (!className.contains(springPrefix1) &&
+                    !className.contains(springPrefix2) &&
+                    className.startsWith(pack)) {
+                sb.append(className).append('.').append(element.getMethodName()).append('/');
+            }
+        }
+        String stack = sb.append(method).toString();
 
         Object result = joinPoint.proceed(joinPoint.getArgs());
         long totalTime = System.nanoTime() - startNs;
 
-        MethodInfo minfo = methods.get(method);
-
+        MethodInfo minfo = methods.get(stack);
         if (minfo == null) {
-            methods.put(method, new MethodInfo(1, totalTime));
+            methods.put(stack, new MethodInfo(1, totalTime));
         } else {
             minfo.calls++;
             minfo.time += totalTime;
-            methods.put(method, minfo);
+            methods.put(stack, minfo);
         }
         return result;
     }
@@ -61,9 +78,9 @@ public class ProfileAspect {
         String[] path = new String[0];
         for (Map.Entry<String, ProfileAspect.MethodInfo> entry: methods.entrySet()) {
             int l = 0;
-            String[] cur = entry.getKey().split("\\.");
+            String[] cur = entry.getKey().split("/");
 
-            for (; l < path.length && path[l].equals(cur[l]); ++l);
+            for (; l < path.length && path[l].startsWith(cur[l]); ++l);
             StringBuilder sp = new StringBuilder();
             for (int j = 0; j < SPACES * l; ++j) sp.append(' ');
 
@@ -73,7 +90,7 @@ public class ProfileAspect {
                 else {
                     System.out.println(
                             cur[l] + ": " +
-                                    ", total time: " + entry.getValue().getTime() / 1000000.0 + " ms" +
+                                    "total time: " + entry.getValue().getTime() / 1000000.0 + " ms" +
                                     ", total calls: " + entry.getValue().getCalls() +
                                     ", average time: " + entry.getValue().getAverage() / 1000000.0 + " ms");
                 }

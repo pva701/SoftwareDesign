@@ -6,3 +6,4 @@
 *.hi
 */out
 .stack-work
+target
